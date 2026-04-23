@@ -48,10 +48,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
   };
 
   return (
-    <Form
-      className="w-full max-w-md space-y-4 rounded-lg border border-border bg-surface p-6"
-      onSubmit={handleSubmit}
-    >
+    <Form className="w-full space-y-4" onSubmit={handleSubmit}>
       {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
       <TextField>
         <Label className="text-sm font-medium">Email</Label>
@@ -83,12 +80,14 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
         <FieldError className="text-xs" />
       </TextField>
 
-      <Button type="button" className="w-full" onPress={onClose}>
-        Отмена
-      </Button>
-      <Button type="submit" className="w-full">
-        Войти
-      </Button>
+      <div className="flex w-full gap-15 mt-8">
+        <Button type="button" className="flex-1" onPress={onClose}>
+          Отмена
+        </Button>
+        <Button type="submit" className="flex-1">
+          Войти
+        </Button>
+      </div>
     </Form>
   );
 };

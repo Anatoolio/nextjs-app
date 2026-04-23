@@ -8,7 +8,12 @@ type LoginModalProps = {
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} size="md">
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="md"
+      title="Вход в аккаунт"
+    >
       <LoginForm onClose={onClose} />
     </CustomModal>
   );

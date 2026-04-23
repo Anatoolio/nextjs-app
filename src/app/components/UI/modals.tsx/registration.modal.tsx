@@ -8,7 +8,12 @@ type RegistrationModalProps = {
 
 const RegistrationModal = ({ isOpen, onClose }: RegistrationModalProps) => {
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} size="md">
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="md"
+      title="Регистрация"
+    >
       <RegistrationForm onClose={onClose} />
     </CustomModal>
   );
