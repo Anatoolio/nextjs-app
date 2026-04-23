@@ -7,7 +7,7 @@ import Link from "next/link";
 import RegistrationModal from "../modals.tsx/registration.modal";
 import LoginModal from "../modals.tsx/login.modal";
 import { signOutUser } from "@/app/actions/sign-out";
-import { useSession } from "next-auth/react";
+import { useAuthStore } from "@/store/auth.store";
 
 interface HeaderItem {
   label: string;
@@ -44,17 +44,20 @@ export function Header({
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const { data: session, status } = useSession();
+  const { isAuth, status, session, setAuthState } = useAuthStore();
+
   const pathName = usePathname();
 
-  const isAuth = status === "authenticated";
-
-  console.log("Session data in Header:", session);
-  console.log("Session status in Header:", status);
+  console.log("Session is AUTH", isAuth);
+  console.log("Session is status", status);
 
   const handleSignOutUser = async () => {
-    console.log("Sign out button clicked");
-    await signOutUser();
+    try {
+      await signOutUser();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+    setAuthState(null, "unauthenticated");
   };
 
   const getNavItems = () => {
@@ -143,21 +146,25 @@ export function Header({
           {brand}
         </div>
         <ul className="hidden items-center gap-4 md:flex">{getNavItems()}</ul>
-        <div className="hidden items-center gap-4 md:flex">
-          {isAuth ? (
-            <>
-              <p>Привет, {session.user?.email}</p>
-              <Button onPress={handleSignOutUser}>Выйти</Button>
-            </>
-          ) : (
-            <>
-              <Button onPress={() => setIsLoginOpen(true)}>Вход</Button>
-              <Button onPress={() => setIsRegistrationOpen(true)}>
-                Регистрация
-              </Button>
-            </>
-          )}
-        </div>
+        {status === "loading" ? (
+          <p>Загрузка...</p>
+        ) : (
+          <div className="hidden items-center gap-4 md:flex">
+            {isAuth ? (
+              <>
+                <p>Привет, {session?.user?.email}</p>
+                <Button onPress={handleSignOutUser}>Выйти</Button>
+              </>
+            ) : (
+              <>
+                <Button onPress={() => setIsLoginOpen(true)}>Вход</Button>
+                <Button onPress={() => setIsRegistrationOpen(true)}>
+                  Регистрация
+                </Button>
+              </>
+            )}
+          </div>
+        )}
       </header>
 
       <RegistrationModal

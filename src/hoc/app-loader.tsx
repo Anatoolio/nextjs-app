@@ -1,0 +1,21 @@
+"use client";
+
+import { useAuthStore } from "@/store/auth.store";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+
+type AppLoaderProps = {
+  children: React.ReactNode;
+};
+
+const AppLoader = ({ children }: AppLoaderProps) => {
+  const { data: session, status } = useSession();
+  const { setAuthState } = useAuthStore();
+  useEffect(() => {
+    setAuthState(session, status);
+  }, [session, status, setAuthState]);
+
+  return <>{children}</>;
+};
+
+export default AppLoader;

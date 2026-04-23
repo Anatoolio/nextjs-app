@@ -1,6 +1,5 @@
 "use client";
 
-import { prisma } from "@/utils/prisma";
 import {
   Form,
   TextField,

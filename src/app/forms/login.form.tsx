@@ -23,9 +23,13 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await signInWithCredentials(formData);
-
-    console.log("result", result);
+    try {
+      await signInWithCredentials(formData);
+      //TODO: найти решение без перезагрузки страницы, так как при перезагрузке пропадает стейт и приходится заново получать сессию, что не оптимально
+      window.location.reload();
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
 
     onClose();
   };

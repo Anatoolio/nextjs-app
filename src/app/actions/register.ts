@@ -36,5 +36,3 @@ export async function registerUser(formData: RegistrationFormData) {
     throw new Error("Error creating user");
   }
 }
-
-//TODO: добавить валидацию данных, например, проверку на совпадение паролей и уникальность email. Также не забыть про хеширование пароля перед сохранением в базу данных!
