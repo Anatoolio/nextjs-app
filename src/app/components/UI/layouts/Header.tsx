@@ -2,7 +2,7 @@
 
 import { useState, ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import Link from "next/link";
 import RegistrationModal from "../modals.tsx/registration.modal";
 import LoginModal from "../modals.tsx/login.modal";
@@ -68,7 +68,7 @@ export function Header({
           <Link
             href={item.href}
             aria-current={isActive ? "page" : undefined}
-            className={`px-3 py-1
+            className={`px-3 py-1 rounded-md border border-transparent
             ${isActive ? "text-blue-500" : "text-foreground"}
             hover:text-blue-300 hover:border
             hover:border-blue-300 hover:rounded-md
@@ -146,25 +146,35 @@ export function Header({
           {brand}
         </div>
         <ul className="hidden items-center gap-4 md:flex">{getNavItems()}</ul>
-        {status === "loading" ? (
-          <p>Загрузка...</p>
-        ) : (
-          <div className="hidden items-center gap-4 md:flex">
-            {isAuth ? (
-              <>
-                <p>Привет, {session?.user?.email}</p>
-                <Button onPress={handleSignOutUser}>Выйти</Button>
-              </>
-            ) : (
-              <>
-                <Button onPress={() => setIsLoginOpen(true)}>Вход</Button>
-                <Button onPress={() => setIsRegistrationOpen(true)}>
-                  Регистрация
-                </Button>
-              </>
-            )}
-          </div>
-        )}
+        <div className="hidden w-[195px] shrink-0 items-center justify-end gap-4 md:flex">
+          {status === "loading" ? (
+            <Spinner size="md" />
+          ) : isAuth ? (
+            <>
+              <p className="truncate">Привет, {session?.user?.email}</p>
+              <Button
+                className="text-white"
+                variant="outline"
+                onPress={handleSignOutUser}
+              >
+                Выйти
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                className="text-white"
+                variant="outline"
+                onPress={() => setIsLoginOpen(true)}
+              >
+                Вход
+              </Button>
+              <Button onPress={() => setIsRegistrationOpen(true)}>
+                Регистрация
+              </Button>
+            </>
+          )}
+        </div>
       </header>
 
       <RegistrationModal
