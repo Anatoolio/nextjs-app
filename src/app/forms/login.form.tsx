@@ -10,6 +10,7 @@ import {
 } from "@heroui/react";
 import { useState } from "react";
 import { signInWithCredentials } from "../actions/sign-in";
+import { useSession } from "next-auth/react";
 
 type LoginFormProps = {
   onClose: () => void;
@@ -21,17 +22,29 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
     password: "",
   });
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { update } = useSession();
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMsg(null); // Сброс ошибки перед новой попыткой входа
+
     try {
-      await signInWithCredentials(formData);
-      //TODO: найти решение без перезагрузки страницы, так как при перезагрузке пропадает стейт и приходится заново получать сессию, что не оптимально
-      window.location.reload();
+      const result = await signInWithCredentials(formData);
+
+      if (!result || result.error) {
+        setErrorMsg("Ошибка входа. Пожалуйста, проверьте свои учетные данные.");
+        return;
+      }
+      await update(); // Обновляем сессию после успешного входа
+      onClose();
     } catch (error) {
       console.error("Error signing in:", error);
+      setErrorMsg(
+        "Произошла ошибка при попытке входа. Пожалуйста, попробуйте снова.",
+      );
     }
-
-    onClose();
   };
 
   return (
@@ -39,6 +52,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
       className="w-full max-w-md space-y-4 rounded-lg border border-border bg-surface p-6"
       onSubmit={handleSubmit}
     >
+      {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
       <TextField>
         <Label className="text-sm font-medium">Email</Label>
         <Input
