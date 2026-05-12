@@ -47,4 +47,5 @@ next-env.d.ts
 
 # AI assistants / tooling
 /.claude/
+.claudeignore
 .github/copilot-instructions.md

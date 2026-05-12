@@ -1,5 +1,9 @@
-// import Image from "next/image";
+import PageContent from "./components/UI/common/page-content";
 
 export default function Home() {
-  return <h1>HOME PAGE</h1>;
+  return (
+    <div>
+      <PageContent />
+    </div>
+  );
 }

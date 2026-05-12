@@ -1,7 +1,11 @@
+import IngredientsForm from "@/app/forms/ingridients.form";
+import PageContent from "../components/UI/common/page-content";
+
 const IngredientsPage = () => {
   return (
     <div>
-      <h1>Ингредиенты</h1>
+      <PageContent />
+      <IngredientsForm />
     </div>
   );
 };

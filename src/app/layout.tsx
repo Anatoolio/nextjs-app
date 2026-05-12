@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
 
 import { Header } from "@/app/components/UI/layouts/Header";
-import { Logo } from "@/app/components/UI/layouts/Logo";
-import { config } from "./config/config";
+import { LogoBox } from "@/app/components/UI/layouts/Logo";
+import { siteConfig } from "./config/siteConfig";
 import { auth } from "@/auth/auth";
 import AppLoader from "@/hoc/app-loader";
+import Title from "./components/UI/layouts/Title";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,18 +39,9 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <SessionProvider session={session}>
           <AppLoader>
-            <Header
-              brand={
-                <>
-                  <Link href="/" className="flex items-center gap-1">
-                    <Logo />
-                  </Link>
-                  <p className="font-bold">NextJs</p>
-                </>
-              }
-              items={config.navItems}
-            />
-            <main className="flex flex-col h-[calc(100vh-65px-52px)] w-full justify-start items-center">
+            <Header brand={<LogoBox />} items={siteConfig.navItems} />
+            <Title />
+            <main className="flex flex-col h-[calc(100vh-65px-52px)] max-w-[1024px ] justify-start mx-auto px-[24px] items-center">
               {children}
             </main>
             <footer className="bg-gray-100 h-52px py-4 flex justify-center items-center">

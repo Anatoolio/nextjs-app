@@ -48,9 +48,6 @@ export function Header({
 
   const pathName = usePathname();
 
-  console.log("Session is AUTH", isAuth);
-  console.log("Session is status", status);
-
   const handleSignOutUser = async () => {
     try {
       await signOutUser();
