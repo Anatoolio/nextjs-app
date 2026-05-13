@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/utils/prisma";
-import { RegistrationFormData } from "../types/form-data";
+import { RegistrationFormData } from "@/types/form-data";
 import { saltAndHashPassword } from "@/utils/password";
 
 export async function registerUser(formData: RegistrationFormData) {

@@ -1,5 +1,5 @@
 import LoginForm from "@/app/forms/login.form";
-import CustomModal from "../common/modal";
+import CustomModal from "@/app/components/common/modal";
 
 type LoginModalProps = {
   isOpen: boolean;

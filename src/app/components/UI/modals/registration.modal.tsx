@@ -1,5 +1,5 @@
 import RegistrationForm from "@/app/forms/registration.form";
-import CustomModal from "../common/modal";
+import CustomModal from "@/app/components/common/modal";
 
 type RegistrationModalProps = {
   isOpen: boolean;

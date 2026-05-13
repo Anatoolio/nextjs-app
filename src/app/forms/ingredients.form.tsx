@@ -10,10 +10,12 @@ import {
   ListBox,
   ListBoxItem,
   Button,
+  Spinner,
+  toast,
 } from "@heroui/react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { CATEGORY_OPTIONS, UNIT_OPTIONS } from "@/constants/select-options";
-import { createIngredient } from "../actions/ingridients";
+import { useIngredientsStore } from "@/store/ingredients.store";
 
 const InitialState = {
   name: "",
@@ -24,24 +26,24 @@ const InitialState = {
 };
 
 const IngredientForm = () => {
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState(InitialState);
+  const [pending, startTransition] = useTransition();
+  const { addIngredient } = useIngredientsStore();
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("Form submitted:", formData);
-    const result = await createIngredient(formData);
-    if (result.errors) {
-      setError(result.errors);
-      console.log("Error creating ingredient:", result.errors);
-    } else {
-      setError(null);
+    startTransition(async () => {
+      const result = await addIngredient(formData);
+      if (!result.success) {
+        toast.danger(result.error, { timeout: 4000 });
+        return;
+      }
       setFormData(InitialState);
-      console.log("Ingredient created successfully:", result.ingredient);
-    }
+      toast.success("Ингредиент создан", { timeout: 3000 });
+    });
   };
 
   return (
-    <Form className="w-125 flex flex-col gap-3" action={handleSubmit}>
+    <Form className="w-full flex flex-col gap-3" action={handleSubmit}>
       <TextField
         name="name"
         isRequired
@@ -56,7 +58,7 @@ const IngredientForm = () => {
           placeholder="Введите название ингредиента"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="bg-default-100 text-sm focus:outline-none"
+          className="bg-default-100 text-sm focus:outline-none h-11 rounded-md"
         />
         <FieldError />
       </TextField>
@@ -73,7 +75,7 @@ const IngredientForm = () => {
             className="w-full"
           >
             <Label className="sr-only">Категория</Label>
-            <Select.Trigger className="bg-default-100 text-sm">
+            <Select.Trigger className="bg-default-100 text-sm h-11 rounded-md">
               <Select.Value className="truncate" />
               <Select.Indicator className="text-black" />
             </Select.Trigger>
@@ -104,7 +106,7 @@ const IngredientForm = () => {
             className="w-full"
           >
             <Label className="sr-only">Ед. изм.</Label>
-            <Select.Trigger className="bg-default-100 text-sm">
+            <Select.Trigger className="bg-default-100 text-sm h-11 rounded-md">
               <Select.Value className="truncate" />
               <Select.Indicator className="text-black" />
             </Select.Trigger>
@@ -151,7 +153,7 @@ const IngredientForm = () => {
                     : null;
                   setFormData({ ...formData, pricePerUnit: value });
                 }}
-                className="bg-default-100 text-sm focus:outline-none pr-8 w-full"
+                className="bg-default-100 text-sm focus:outline-none pr-8 w-full h-11 rounded-md"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 ₽
@@ -170,13 +172,18 @@ const IngredientForm = () => {
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="bg-default-100 text-sm focus:outline-none w-full"
+          className="bg-default-100 text-sm focus:outline-none w-full h-11 rounded-md"
         />
       </TextField>
 
       <div className="flex w-full items-center justify-end">
-        <Button variant="primary" type="submit">
-          Добавить ингредиент
+        <Button
+          variant="primary"
+          type="submit"
+          isDisabled={pending}
+          className="flex items-center gap-2 h-11 rounded-md"
+        >
+          {pending ? <Spinner size="sm" /> : "Добавить ингредиент"}
         </Button>
       </div>
     </Form>

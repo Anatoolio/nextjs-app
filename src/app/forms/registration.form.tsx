@@ -9,8 +9,8 @@ import {
   Button,
 } from "@heroui/react";
 import { useState } from "react";
-import { registerUser } from "../actions/register";
-import { signInWithCredentials } from "../actions/sign-in";
+import { registerUser } from "@/app/actions/register";
+import { signInWithCredentials } from "@/app/actions/sign-in";
 import { useSession } from "next-auth/react";
 
 type RegistrationFormProps = {
@@ -69,7 +69,7 @@ const RegistrationForm = ({ onClose }: RegistrationFormProps) => {
           type="email"
           required
           minLength={3}
-          className="rounded-full border-border/60"
+          className="h-11 rounded-md border-border/60"
           placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -83,7 +83,7 @@ const RegistrationForm = ({ onClose }: RegistrationFormProps) => {
           type="password"
           required
           minLength={6}
-          className="rounded-full border-border/60"
+          className="h-11 rounded-md border-border/60"
           placeholder="Enter your password"
           value={formData.password}
           onChange={(e) =>
@@ -97,7 +97,7 @@ const RegistrationForm = ({ onClose }: RegistrationFormProps) => {
         <Input
           type="password"
           required
-          className="rounded-full border-border/60"
+          className="h-11 rounded-md border-border/60"
           placeholder="Confirm your password"
           value={formData.confirmPassword}
           onChange={(e) =>
@@ -107,10 +107,14 @@ const RegistrationForm = ({ onClose }: RegistrationFormProps) => {
         <FieldError className="text-xs" />
       </TextField>
       <div className="flex w-full gap-15 mt-8">
-        <Button type="button" className="flex-1" onPress={onClose}>
+        <Button
+          type="button"
+          className="flex-1 h-11 rounded-md"
+          onPress={onClose}
+        >
           Отмена
         </Button>
-        <Button type="submit" className="flex-1">
+        <Button type="submit" className="flex-1 h-11 rounded-md">
           Зарегистрироваться
         </Button>
       </div>

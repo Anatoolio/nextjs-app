@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button, Spinner } from "@heroui/react";
 import Link from "next/link";
-import RegistrationModal from "../modals.tsx/registration.modal";
-import LoginModal from "../modals.tsx/login.modal";
+import RegistrationModal from "@/app/components/UI/modals/registration.modal";
+import LoginModal from "@/app/components/UI/modals/login.modal";
 import { signOutUser } from "@/app/actions/sign-out";
 import { useAuthStore } from "@/store/auth.store";
 
@@ -47,37 +47,46 @@ export function Header({
   const { isAuth, status, session, setAuthState } = useAuthStore();
 
   const pathName = usePathname();
+  const router = useRouter();
 
   const handleSignOutUser = async () => {
     try {
       await signOutUser();
+      setAuthState(null, "unauthenticated");
+      router.push("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }
-    setAuthState(null, "unauthenticated");
   };
 
   const getNavItems = () => {
-    return items.map((item) => {
-      const isActive = pathName === item.href;
-      return (
-        <li key={item.href}>
-          <Link
-            href={item.href}
-            aria-current={isActive ? "page" : undefined}
-            className={`px-3 py-1 rounded-md border border-transparent
+    return items
+      .filter((item) => {
+        if (item.href === "/ingredients") {
+          return isAuth;
+        }
+        return true;
+      })
+      .map((item) => {
+        const isActive = pathName === item.href;
+        return (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              className={`px-3 py-1 rounded-md border border-transparent
             ${isActive ? "text-blue-500" : "text-foreground"}
             hover:text-blue-300 hover:border
             hover:border-blue-300 hover:rounded-md
             transition-colors
             transition-border
             duration-200`}
-          >
-            {item.label}
-          </Link>
-        </li>
-      );
-    });
+            >
+              {item.label}
+            </Link>
+          </li>
+        );
+      });
   };
 
   const getNavItemsIsOpened = () => {
@@ -150,7 +159,7 @@ export function Header({
             <>
               <p className="truncate">Привет, {session?.user?.email}</p>
               <Button
-                className="text-white"
+                className="text-white h-11 rounded-md"
                 variant="outline"
                 onPress={handleSignOutUser}
               >
@@ -160,13 +169,16 @@ export function Header({
           ) : (
             <>
               <Button
-                className="text-white"
+                className="text-white h-11 rounded-md"
                 variant="outline"
                 onPress={() => setIsLoginOpen(true)}
               >
                 Вход
               </Button>
-              <Button onPress={() => setIsRegistrationOpen(true)}>
+              <Button
+                className="h-11 rounded-md"
+                onPress={() => setIsRegistrationOpen(true)}
+              >
                 Регистрация
               </Button>
             </>
