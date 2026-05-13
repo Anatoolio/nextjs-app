@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import { Button } from "@heroui/react";
+import { usePathname, useRouter } from "next/navigation";
+import { Button, Spinner } from "@heroui/react";
 import Link from "next/link";
-import RegistrationModal from "../modals.tsx/registration.modal";
-import LoginModal from "../modals.tsx/login.modal";
+import RegistrationModal from "@/app/components/UI/modals/registration.modal";
+import LoginModal from "@/app/components/UI/modals/login.modal";
 import { signOutUser } from "@/app/actions/sign-out";
-import { useSession } from "next-auth/react";
+import { useAuthStore } from "@/store/auth.store";
 
 interface HeaderItem {
   label: string;
@@ -44,40 +44,49 @@ export function Header({
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const { data: session, status } = useSession();
+  const { isAuth, status, session, setAuthState } = useAuthStore();
+
   const pathName = usePathname();
-
-  const isAuth = status === "authenticated";
-
-  console.log("Session data in Header:", session);
-  console.log("Session status in Header:", status);
+  const router = useRouter();
 
   const handleSignOutUser = async () => {
-    console.log("Sign out button clicked");
-    await signOutUser();
+    try {
+      await signOutUser();
+      setAuthState(null, "unauthenticated");
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const getNavItems = () => {
-    return items.map((item) => {
-      const isActive = pathName === item.href;
-      return (
-        <li key={item.href}>
-          <Link
-            href={item.href}
-            aria-current={isActive ? "page" : undefined}
-            className={`px-3 py-1
+    return items
+      .filter((item) => {
+        if (item.href === "/ingredients") {
+          return isAuth;
+        }
+        return true;
+      })
+      .map((item) => {
+        const isActive = pathName === item.href;
+        return (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+              className={`px-3 py-1 rounded-md border border-transparent
             ${isActive ? "text-blue-500" : "text-foreground"}
             hover:text-blue-300 hover:border
             hover:border-blue-300 hover:rounded-md
             transition-colors
             transition-border
             duration-200`}
-          >
-            {item.label}
-          </Link>
-        </li>
-      );
-    });
+            >
+              {item.label}
+            </Link>
+          </li>
+        );
+      });
   };
 
   const getNavItemsIsOpened = () => {
@@ -143,16 +152,33 @@ export function Header({
           {brand}
         </div>
         <ul className="hidden items-center gap-4 md:flex">{getNavItems()}</ul>
-        <div className="hidden items-center gap-4 md:flex">
-          {isAuth ? (
+        <div className="hidden w-[195px] shrink-0 items-center justify-end gap-4 md:flex">
+          {status === "loading" ? (
+            <Spinner size="md" />
+          ) : isAuth ? (
             <>
-              <p>Привет, {session.user?.email}</p>
-              <Button onPress={handleSignOutUser}>Выйти</Button>
+              <p className="truncate">Привет, {session?.user?.email}</p>
+              <Button
+                className="text-white h-11 rounded-md"
+                variant="outline"
+                onPress={handleSignOutUser}
+              >
+                Выйти
+              </Button>
             </>
           ) : (
             <>
-              <Button onPress={() => setIsLoginOpen(true)}>Вход</Button>
-              <Button onPress={() => setIsRegistrationOpen(true)}>
+              <Button
+                className="text-white h-11 rounded-md"
+                variant="outline"
+                onPress={() => setIsLoginOpen(true)}
+              >
+                Вход
+              </Button>
+              <Button
+                className="h-11 rounded-md"
+                onPress={() => setIsRegistrationOpen(true)}
+              >
                 Регистрация
               </Button>
             </>

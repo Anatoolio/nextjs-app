@@ -54,6 +54,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 3600, // 1 hour
   },
   secret: process.env.NEXTAUTH_SECRET,
+  logger: {
+    error(error) {
+      if (error.name === "CredentialsSignin") return;
+      console.error(error);
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

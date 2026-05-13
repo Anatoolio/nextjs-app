@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/utils/prisma";
-import { RegistrationFormData } from "../types/form-data";
+import { RegistrationFormData } from "@/types/form-data";
 import { saltAndHashPassword } from "@/utils/password";
 
 export async function registerUser(formData: RegistrationFormData) {
@@ -36,5 +36,3 @@ export async function registerUser(formData: RegistrationFormData) {
     throw new Error("Error creating user");
   }
 }
-
-//TODO: добавить валидацию данных, например, проверку на совпадение паролей и уникальность email. Также не забыть про хеширование пароля перед сохранением в базу данных!

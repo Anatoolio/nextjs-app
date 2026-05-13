@@ -1,5 +1,6 @@
 "use server";
 
+import { AuthError } from "next-auth";
 import { signIn } from "@/auth/auth";
 
 export async function signInWithCredentials(params: {
@@ -7,13 +8,15 @@ export async function signInWithCredentials(params: {
   password: string;
 }) {
   try {
-    const result = await signIn("credentials", {
+    return await signIn("credentials", {
       ...params,
       redirect: false,
     });
-    return result;
   } catch (error) {
-    console.error("Error signing in:", error);
-    throw error;
+    if (error instanceof AuthError) {
+      console.error("Auth error signing in:", error);
+    } else {
+      console.error("Error signing in:", error);
+    }
   }
 }

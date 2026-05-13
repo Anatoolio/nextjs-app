@@ -1,5 +1,5 @@
 import LoginForm from "@/app/forms/login.form";
-import CustomModal from "../common/modal";
+import CustomModal from "@/app/components/common/modal";
 
 type LoginModalProps = {
   isOpen: boolean;
@@ -8,7 +8,12 @@ type LoginModalProps = {
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} size="md">
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="md"
+      title="Вход в аккаунт"
+    >
       <LoginForm onClose={onClose} />
     </CustomModal>
   );

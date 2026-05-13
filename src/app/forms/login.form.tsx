@@ -7,9 +7,11 @@ import {
   Input,
   FieldError,
   Button,
+  toast,
 } from "@heroui/react";
 import { useState } from "react";
-import { signInWithCredentials } from "../actions/sign-in";
+import { signInWithCredentials } from "@/app/actions/sign-in";
+import { useSession } from "next-auth/react";
 
 type LoginFormProps = {
   onClose: () => void;
@@ -21,27 +23,42 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
     password: "",
   });
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { update } = useSession();
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await signInWithCredentials(formData);
+    setErrorMsg(null); // Сброс ошибки перед новой попыткой входа
 
-    console.log("result", result);
+    try {
+      const result = await signInWithCredentials(formData);
 
-    onClose();
+      if (!result || result.error) {
+        setErrorMsg("Ошибка входа. Пожалуйста, проверьте свои учетные данные.");
+        return;
+      }
+      await update(); // Обновляем сессию после успешного входа
+      toast.success("Вы успешно вошли", { timeout: 3000 });
+      onClose();
+    } catch (error) {
+      console.error("Error signing in:", error);
+      setErrorMsg(
+        "Произошла ошибка при попытке входа. Пожалуйста, попробуйте снова.",
+      );
+    }
   };
 
   return (
-    <Form
-      className="w-full max-w-md space-y-4 rounded-lg border border-border bg-surface p-6"
-      onSubmit={handleSubmit}
-    >
+    <Form className="w-full space-y-4" onSubmit={handleSubmit}>
+      {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
       <TextField>
         <Label className="text-sm font-medium">Email</Label>
         <Input
           type="email"
           required
           minLength={3}
-          className="rounded-full border-border/60"
+          className="h-11 rounded-md border-border/60"
           placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -55,7 +72,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
           type="password"
           required
           minLength={6}
-          className="rounded-full border-border/60"
+          className="h-11 rounded-md border-border/60"
           placeholder="Enter your password"
           value={formData.password}
           onChange={(e) =>
@@ -65,12 +82,18 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
         <FieldError className="text-xs" />
       </TextField>
 
-      <Button type="button" className="w-full" onPress={onClose}>
-        Отмена
-      </Button>
-      <Button type="submit" className="w-full">
-        Войти
-      </Button>
+      <div className="flex w-full gap-15 mt-8">
+        <Button
+          type="button"
+          className="flex-1 h-11 rounded-md"
+          onPress={onClose}
+        >
+          Отмена
+        </Button>
+        <Button type="submit" className="flex-1 h-11 rounded-md">
+          Войти
+        </Button>
+      </div>
     </Form>
   );
 };
