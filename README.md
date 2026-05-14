@@ -1,24 +1,46 @@
-## Getting Started
+# next-app
 
-First, run the development server:
+## Setup
+
+```bash
+npm install
+```
+Installs dependencies and generates Prisma Client via `postinstall`.
+
+```bash
+npx prisma dev
+```
+Starts a local Prisma Postgres server. Keep it running in a separate terminal. It prints a `prisma+postgres://...` URL.
+
+Create `.env` in the project root:
+
+```env
+DATABASE_URL="<prisma+postgres URL from `prisma dev`>"
+DIRECT_URL="<same URL>"
+AUTH_SECRET="<generate with: openssl rand -base64 32>"
+```
+`DATABASE_URL` is used by the runtime client, `DIRECT_URL` by the Prisma CLI (see `prisma.config.ts`). `AUTH_SECRET` is required by NextAuth.
+
+```bash
+npx prisma migrate dev
+```
+Applies migrations to the local database.
+
+## Develop
 
 ```bash
 npm run dev
-npx prisma dev
 ```
-
-View and edit database data via GUI:
+Starts Next.js on http://localhost:3000.
 
 ```bash
 npx prisma studio
 ```
+GUI for browsing database rows.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Schema changes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx prisma migrate dev --name <change_description>
+```
+Creates a new migration in `prisma/migrations/` and applies it.
