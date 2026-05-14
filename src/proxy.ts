@@ -7,9 +7,18 @@ export async function proxy(request: NextRequest) {
     req: request,
     secret: process.env.AUTH_SECRET,
   });
-  const protectedRoutes = ["/ingredients", "/profile"];
+  const protectedRoutes = [
+    "/ingredients",
+    "/profile",
+    "/recipes/:path*",
+    "/recipes/new",
+  ];
 
-  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+  if (
+    protectedRoutes.some((route) =>
+      pathname.startsWith(route.replace(":path*", "")),
+    )
+  ) {
     if (!token) {
       const url = new URL("/error", request.url);
       url.searchParams.set("message", "Unauthorized access. Please log in.");
@@ -21,5 +30,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/ingredients", "/profile"],
+  matcher: ["/ingredients", "/profile", "/recipes/:path*", "/recipes/new"],
 };

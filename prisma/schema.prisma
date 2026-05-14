@@ -75,19 +75,30 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+//TODO сделать загрузку image
+model Recipe {
+  id          String   @id @default(uuid())
+  name       String
+  description String
+  imageUrl   String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-// // возможно стоит добавить поле для хранения изображения ингридиента но в будущем, сейчас не критично
-// model Recipe {
-//   id          String   @id @default(uuid())
-//   title       String
-//   description String
-//   createdAt   DateTime @default(now()) @map("created_at")
-//   updatedAt   DateTime @updatedAt @map("updated_at")
+  ingredients RecipeIngredient[]
 
-//   ingredients Ingredient[] @relation("RecipeIngredients")
+  @@map("recipes")
+}
 
-//   @@map("recipes")
-// }
+model RecipeIngredient {
+  id          String   @id @default(uuid())
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  recipeId     String @map("recipe_id")
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId   String @map("ingredient_id") 
+  quantity       Float @map("quantity")
+
+  @@map("recipe_ingredient")
+} 
 
 model Ingredient {
   id          String   @id @default(uuid())
@@ -99,8 +110,7 @@ model Ingredient {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  // recipes Recipe[] @relation("RecipeIngredients")
-
-  @@map("ingredients")
+  recipes RecipeIngredient[]
+  @@map("ingredients") 
 }
  

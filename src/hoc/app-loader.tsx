@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { Toast } from "@heroui/react";
 import { useIngredientsStore } from "@/store/ingredients.store";
+import { useRecipeStore } from "@/store/recipe.store";
 
 type AppLoaderProps = {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ const AppLoader = ({ children }: AppLoaderProps) => {
   const { data: session, status } = useSession();
   const { loadIngredients } = useIngredientsStore();
   const { isAuth, setAuthState } = useAuthStore();
+  const { loadRecipes } = useRecipeStore();
 
   useEffect(() => {
     setAuthState(session, status);
@@ -24,6 +26,10 @@ const AppLoader = ({ children }: AppLoaderProps) => {
       loadIngredients();
     }
   }, [isAuth, loadIngredients]);
+
+  useEffect(() => {
+    loadRecipes();
+  }, [loadRecipes]);
 
   return (
     <>
